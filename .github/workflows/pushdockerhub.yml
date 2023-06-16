@@ -19,7 +19,7 @@ jobs:
       - name: Check for new release of geodesic 
         run: |
           touch .latest_release # This creates the file if it doesn't exist yet
-          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" jq -r .tag_name)
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name)
           echo "Latest release is $LATEST_RELEASE"
           if [[ "$LATEST_RELEASE" != "$(cat .latest_release)" ]]; then
             echo $LATEST_RELEASE > .latest_release
