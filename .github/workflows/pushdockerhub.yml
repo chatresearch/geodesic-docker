@@ -24,8 +24,6 @@ jobs:
           if [[ "$LATEST_RELEASE" != "$(cat .latest_release)" ]]; then
             echo $LATEST_RELEASE > .latest_release
             exit 0
-          else exit 1
-          fi
         id: check
           
       - name: Commit changes
