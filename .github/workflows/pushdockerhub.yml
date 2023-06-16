@@ -1,10 +1,35 @@
 name: Publish Docker image
 
-on: workflow_dispatch
+on: 
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight
+  workflow_dispatch:
 
 jobs:
+  check_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Check for new release of geodesic 
+        run: |
+          touch .latest_release # This creates the file if it doesn't exist yet
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest jq -r .tag_name)
+          echo "Latest release is $LATEST_RELEASE"
+          if [[ "$LATEST_RELEASE" != "$(cat .latest_release)" ]]; then
+            echo $LATEST_RELEASE > .latest_release
+            exit 0
+          else exit 1
+          fi
+    
   push_to_registry:
     name: Push Docker image to Docker Hub
+    needs: check_release
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
