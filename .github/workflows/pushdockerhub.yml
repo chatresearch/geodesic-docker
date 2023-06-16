@@ -26,7 +26,15 @@ jobs:
             exit 0
           else exit 1
           fi
-    
+        id: check
+          
+      - name: Commit changes
+        if: steps.check.outcome == 'success'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update .latest_release
+          file_pattern: .latest_release
+          
   push_to_registry:
     name: Push Docker image to Docker Hub
     needs: check_release
