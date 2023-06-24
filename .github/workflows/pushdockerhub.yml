@@ -33,7 +33,7 @@ jobs:
             echo $ATMOS_LATEST_RELEASE > .atmos_latest_release
             RETURN_ATMOS=0
           fi
-          if [[ "$RETURN_ATMOS -eq 0" ]] || [ "$RETURN_GEO -eq 0 ]]; then
+          if [[ "$RETURN_ATMOS -eq 0" ]] || [ "$RETURN_GEO -eq 0" ]]; then
             exit 0
           else
             exit 1
