@@ -28,7 +28,7 @@ jobs:
           if [[ "$GEO_LATEST_RELEASE" != "$(cat .geo_latest_release)" ]]; then
             echo $GEO_LATEST_RELEASE > .geo_latest_release
             echo "{geo_updated}=true" >> $GITHUB_OUTPUT
-            echo "$GITHUB_OUTPUT"
+            cat "$GITHUB_OUTPUT"
           else
             echo "{geo_updated}=false" >> $GITHUB_OUTPUT
           fi
@@ -39,7 +39,7 @@ jobs:
           if [[ "$ATMOS_LATEST_RELEASE" != "$(cat .atmos_latest_release)" ]]; then
             echo $ATMOS_LATEST_RELEASE > .atmos_latest_release
             echo "{atmos_updated}=true" >> $GITHUB_OUTPUT
-            echo "$GITHUB_OUTPUT"
+            cat "$GITHUB_OUTPUT"
           else
             echo "{atmos_updated}=false" >> $GITHUB_OUTPUT
           fi
