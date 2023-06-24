@@ -15,38 +15,22 @@ jobs:
 
       - name: Install jq
         run: sudo apt-get install -y jq
-
-      - name: Check for new release of geodesic or atmos
-        continue-on-error: true
-        run: |
-          RETURN_GEO=1
-          RETURN_ATMOS=1
-          touch .geo_latest_release .atmos_latest_release # This creates the file if it doesn't exist yet
-          GEO_LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name)
-          ATMOS_LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name)
-          echo "Latest geodesic release is $GEO_LATEST_RELEASE, atmos $ATMOS_LATEST_RELEASE"
-          if [[ "$GEO_LATEST_RELEASE" != "$(cat .geo_latest_release)" ]]; then
-            echo $GEO_LATEST_RELEASE > .geo_latest_release
-            RETURN_GEO=0
-          fi
-          if [[ "$ATMOS_LATEST_RELEASE" != "$(cat .atmos_latest_release)" ]]; then
-            echo $ATMOS_LATEST_RELEASE > .atmos_latest_release
-            RETURN_ATMOS=0
-          fi
-          if [[ "$RETURN_ATMOS -eq 0" ]] || [ "$RETURN_GEO -eq 0" ]]; then
-            exit 0
-          else
-            exit 1
-          fi
-          
-        id: check
-          
-      - name: Commit changes
-        if: steps.check.outcome == 'success'
-        uses: stefanzweifel/git-auto-commit-action@v4
+      
+      - uses: actions/cache@v3
+        id: cache
         with:
-          commit_message: Update .*_latest_release
-          file_pattern: .*_latest_release
+          path: releases
+          key: .*release
+        
+  
+      - name: check geo release
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > .geo_release
+     
+      - name: check geo release
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > .atmos_release        
+          
           
   push_to_registry:
     name: Push Docker image to Docker Hub
