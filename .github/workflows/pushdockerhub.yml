@@ -21,28 +21,29 @@ jobs:
         with:
           path: ./.*release*
           key: ${{ runner.os }}/release
-      
-      - name: check for new releases
-        id: check
+
+      - name: check geo versions
+        run: |
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > .geo_latest_release)
+          if [[ "$GEO_LATEST_RELEASE" != "$(cat .geo_latest_release)" ]]; then
+            echo $GEO_LATEST_RELEASE > .geo_latest_release
+            echo "::set-output name=geo_updated::true"
+            exit 0
+          else
+            echo "::set-output name=geo_updated::false"
+          fi
+
+      - name: check atmos versions
         run: |
           touch .latest_release
-          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > .latest_release)
-          if [[ "$LATEST_RELEASE" != "$(cat .latest_release)" ]]; then
-            echo $LATEST_RELEASE > .latest_release
-            echo "::set-output name=updated::true"
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > .atmos_latest_release)
+          if [[ "$ATMOS_LATEST_RELEASE" != "$(cat .atmos_latest_release)" ]]; then
+            echo $ATMOS_LATEST_RELEASE > .atmos_latest_release
+            echo "::set-output name=atmos_updated::true"
+            exit 0
           else
-            echo "::set-output name=updated::false"
+            echo "::set-output name=atmos_updated::false"
           fi
-        
-          updated: ${{ steps.check.outputs.updated }}
-        
-  
-  #    - name: check geo release
-  #      if: steps.cache.outputs.cache-hit != 'true'
-   #     run: curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > .geo_release
-    # 
-     # - name: check geo release
-      ## run: curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > .atmos_release        
           
           
   push_to_registry:
