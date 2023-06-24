@@ -35,7 +35,6 @@ jobs:
 
       - name: check atmos versions
         run: |
-          touch .latest_release
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > .atmos_latest_release)
           if [[ "$ATMOS_LATEST_RELEASE" != "$(cat .atmos_latest_release)" ]]; then
             echo $ATMOS_LATEST_RELEASE > .atmos_latest_release
