@@ -19,10 +19,11 @@ jobs:
       - uses: actions/cache@v3
         id: cache
         with:
-          path: ./.*release*
+          path: ./.*release
           key: ${{ runner.os }}/release
 
       - name: check geo versions
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > .geo_latest_release)
           if [[ "$GEO_LATEST_RELEASE" != "$(cat .geo_latest_release)" ]]; then
@@ -35,6 +36,7 @@ jobs:
         id: geo_updated
 
       - name: check atmos versions
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > .atmos_latest_release)
           if [[ "$ATMOS_LATEST_RELEASE" != "$(cat .atmos_latest_release)" ]]; then
@@ -45,6 +47,13 @@ jobs:
             echo "atmos_updated=false" >> $GITHUB_OUTPUT
           fi
         id: atmos_updated
+
+      - name: save versions
+        id: cache-save
+        uses: actions/acache/save@v3
+        with:
+          path: ./.*release
+          key: ${{ runner.os }}/release
           
           
   push_to_registry:
