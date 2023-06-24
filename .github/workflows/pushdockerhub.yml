@@ -19,17 +19,30 @@ jobs:
       - uses: actions/cache@v3
         id: cache
         with:
-          path: releases
-          key: .*release
+          path: ./.*release*
+          key: ${{ runner.os }}/release
+      
+      - name: check for new releases
+        id: check
+        run: |
+          touch .latest_release
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > .latest_release)
+          if [[ "$LATEST_RELEASE" != "$(cat .latest_release)" ]]; then
+            echo $LATEST_RELEASE > .latest_release
+            echo "::set-output name=updated::true"
+          else
+            echo "::set-output name=updated::false"
+          fi
+        
+          updated: ${{ steps.check.outputs.updated }}
         
   
-      - name: check geo release
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > .geo_release
-     
-      - name: check geo release
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > .atmos_release        
+  #    - name: check geo release
+  #      if: steps.cache.outputs.cache-hit != 'true'
+   #     run: curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > .geo_release
+    # 
+     # - name: check geo release
+      ## run: curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > .atmos_release        
           
           
   push_to_registry:
