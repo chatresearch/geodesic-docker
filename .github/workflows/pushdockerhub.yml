@@ -19,7 +19,7 @@ jobs:
       - uses: actions/cache@v3
         id: cache
         with:
-          path: /*
+          path: ~/.*release
           key: ${{ runner.os }}/release
 
       - name: check geo versions
@@ -35,18 +35,18 @@ jobs:
           fi
         id: geo_updated
 
-      - name: check atmos versions
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > atmos_latest_release)
-          if [[ "$ATMOS_LATEST_RELEASE" != "$(cat atmos_latest_release)" ]]; then
-            echo $ATMOS_LATEST_RELEASE > atmos_latest_release
-            echo "atmos_updated=true" >> $GITHUB_OUTPUT
-            cat "$GITHUB_OUTPUT"
-          else
-            echo "atmos_updated=false" >> $GITHUB_OUTPUT
-          fi
-        id: atmos_updated
+      # - name: check atmos versions
+      #   if: steps.cache.outputs.cache-hit != 'true'
+      #   run: |
+      #     LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > atmos_latest_release)
+      #     if [[ "$ATMOS_LATEST_RELEASE" != "$(cat atmos_latest_release)" ]]; then
+      #       echo $ATMOS_LATEST_RELEASE > atmos_latest_release
+      #       echo "atmos_updated=true" >> $GITHUB_OUTPUT
+      #       cat "$GITHUB_OUTPUT"
+      #     else
+      #       echo "atmos_updated=false" >> $GITHUB_OUTPUT
+      #     fi
+      #   id: atmos_updated
 
           
   push_to_registry:
