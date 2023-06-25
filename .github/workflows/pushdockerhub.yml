@@ -25,13 +25,14 @@ jobs:
       - name: check geo versions
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > geo_latest_release)
-          if [[ "$GEO_LATEST_RELEASE" != "$(cat geo_latest_release)" ]]; then
-            echo $GEO_LATEST_RELEASE > geo_latest_release
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > ~/geo_latest_release)
+          if [[ "$GEO_LATEST_RELEASE" != "$(cat ~/geo_latest_release)" ]]; then
+            echo $GEO_LATEST_RELEASE > ~/geo_latest_release
             echo "geo_updated=true" >> $GITHUB_OUTPUT
             cat "$GITHUB_OUTPUT"
           else
             echo "geo_updated=false" >> $GITHUB_OUTPUT
+            ls $GITHUB_OUTPUT
           fi
         id: geo_updated
 
