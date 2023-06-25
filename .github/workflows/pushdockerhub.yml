@@ -19,7 +19,7 @@ jobs:
       - uses: actions/cache@v3
         id: cache
         with:
-          path: **/
+          path: /
           key: ${{ runner.os }}/release
 
       - name: check geo versions
