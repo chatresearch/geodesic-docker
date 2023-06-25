@@ -30,6 +30,7 @@ jobs:
             echo $GEO_LATEST_RELEASE > ~/geo_latest_release
             echo "geo_updated=true" >> $GITHUB_OUTPUT
             cat "$GITHUB_OUTPUT"
+            ls $GITHUB_OUTPUT
           else
             echo "geo_updated=false" >> $GITHUB_OUTPUT
             ls $GITHUB_OUTPUT
