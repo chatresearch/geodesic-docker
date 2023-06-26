@@ -27,10 +27,13 @@ jobs:
         run: |
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name)
           ls -l ~/geo_latest_release
+          cat ~/geo_latest_release
           echo $LATEST_RELEASE
           if [[ (("$LATEST_RELEASE" != "$(cat ~/geo_latest_release)")) ]]; then
             echo $LATEST_RELEASE > ~/geo_latest_release
             echo "updating release"
+            ls -l ~/geo_latest_release
+            cat ~/geo_latest_release
           fi
         id: geo_updated
 
