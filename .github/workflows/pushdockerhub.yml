@@ -43,8 +43,10 @@ jobs:
       - name: check for release updates
         if: steps.geo_updated.outcome == 'success' || steps.atmos_updated.outcome == 'success'
         run: exit 0
+        id: release_updated
 
       - name: No updates available
+        if: steps.release_updated.outcome == 'failure'
         run: exit 1
 
 
