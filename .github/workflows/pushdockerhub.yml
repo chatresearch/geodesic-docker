@@ -5,6 +5,7 @@ on:
     - cron: '0 0 * * *' # Runs every day at midnight
   workflow_dispatch:
 
+
 jobs:
   check_release:
     runs-on: ubuntu-latest
@@ -41,8 +42,7 @@ jobs:
             echo "updating release"
             ls -l ~/geo_latest_release
             cat ~/geo_latest_release
-          else
-            exit 1
+            echo ::set-env name=DO_BUILD::true
           fi
         id: geo_updated
 
