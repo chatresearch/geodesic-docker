@@ -25,15 +25,16 @@ jobs:
 
       - name: warm cache
         run: |
-         cat ~/geo_latest_release
-         cat ~/atmos_latest_release
+
          if [[ ! -f ~/geo_latest_release ]]; then
           curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > ~/geo_latest_release
+          echo "DO_BUILD=true" >> "$GITHUB_ENV"
          fi
          if [[ ! -f ~/atmos_latest_release ]]; then
           curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > ~/atmos_latest_release
+          echo "DO_BUILD=true" >> "$GITHUB_ENV"
          fi
-         echo "DO_BUILD=true" >> "$GITHUB_ENV"
+         
   
       - name: check geo versions
         if: steps.cache.outputs.cache-hit == 'true'
