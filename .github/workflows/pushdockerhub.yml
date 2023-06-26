@@ -42,7 +42,7 @@ jobs:
             echo "updating release"
             ls -l ~/geo_latest_release
             cat ~/geo_latest_release
-            echo ::set-env name=DO_BUILD::true
+            echo "DO_BUILD=true" >> "$GITHUB_ENV"
           fi
         id: geo_updated
 
@@ -58,11 +58,14 @@ jobs:
             echo "updating release"
             ls -l ~/atmos_latest_release
             cat ~/atmos_latest_release
-          else
-            exit 1
+            echo "DO_BUILD=true" >> "$GITHUB_ENV"
           fi
         id: atmos_updated
 
+      - name: set build flag
+        if: ${{ env.DO_BUILD != 'true' }}
+        run: exit 1
+        
           
   push_to_registry:
     name: Push Docker image to Docker Hub
