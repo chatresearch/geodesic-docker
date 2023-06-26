@@ -43,6 +43,7 @@ jobs:
             cat ~/geo_latest_release
           else
             exit 1
+          fi
         id: geo_updated
 
       - name: check geo versions
@@ -59,6 +60,7 @@ jobs:
             cat ~/atmos_latest_release
           else
             exit 1
+          fi
         id: atmos_updated
 
           
