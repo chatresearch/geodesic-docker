@@ -64,8 +64,10 @@ jobs:
           fi
 
       - name: set build flag
-        if: ${{ env.DO_BUILD != 'true' }}
-        run: exit 1
+        run:  |
+          if [[ -z env.DO_BUILD ]]; then
+            exit 1
+          fi
         
           
   push_to_registry:
