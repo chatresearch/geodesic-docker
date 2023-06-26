@@ -28,6 +28,7 @@ jobs:
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > ~/geo_latest_release)
           if [[ "$GEO_LATEST_RELEASE" != "$(cat ~/geo_latest_release)" ]]; then
             echo $GEO_LATEST_RELEASE > ~/geo_latest_release
+          fi
         id: geo_updated
 
       - name: check atmos versions
@@ -36,6 +37,7 @@ jobs:
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > ~/atmos_latest_release)
           if [[ "$ATMOS_LATEST_RELEASE" != "$(cat ~/atmos_latest_release)" ]]; then
             echo $ATMOS_LATEST_RELEASE > ~/atmos_latest_release
+          fi
         id: atmos_updated
 
       - name: check for release updates
