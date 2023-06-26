@@ -28,26 +28,27 @@ jobs:
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > ~/geo_latest_release)
           if [[ "$GEO_LATEST_RELEASE" != "$(cat ~/geo_latest_release)" ]]; then
             echo $GEO_LATEST_RELEASE > ~/geo_latest_release
-            echo "geo_updated=true" >> $GITHUB_OUTPUT
-            cat "$GITHUB_OUTPUT"
-          else
-            echo "geo_updated=false" >> $GITHUB_OUTPUT
-          fi
         id: geo_updated
 
-      # - name: check atmos versions
-      #   if: steps.cache.outputs.cache-hit != 'true'
-      #   run: |
-      #     LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > atmos_latest_release)
-      #     if [[ "$ATMOS_LATEST_RELEASE" != "$(cat atmos_latest_release)" ]]; then
-      #       echo $ATMOS_LATEST_RELEASE > atmos_latest_release
-      #       echo "atmos_updated=true" >> $GITHUB_OUTPUT
-      #       cat "$GITHUB_OUTPUT"
-      #     else
-      #       echo "atmos_updated=false" >> $GITHUB_OUTPUT
-      #     fi
-      #   id: atmos_updated
+      - name: check atmos versions
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > ~/atmos_latest_release)
+          if [[ "$ATMOS_LATEST_RELEASE" != "$(cat ~/atmos_latest_release)" ]]; then
+            echo $ATMOS_LATEST_RELEASE > ~/atmos_latest_release
+        id: atmos_updated
 
+      - name: check for release updates
+        if: steps.geo_updated.outcome == 'success' || steps.atmos_updated.outcome == 'success'
+        run: exit 0
+
+      - name: No updates available
+        continue-on-error: true
+        run: exit 1
+
+
+
+      
           
   push_to_registry:
     name: Push Docker image to Docker Hub
