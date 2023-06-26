@@ -68,8 +68,8 @@ jobs:
 
       - name: set build flag
         run:  |
-          echo $env.DO_BUILD
-          if [[ -z $env.DO_BUILD ]]; then
+          echo  ${{ env.DO_BUILD}}
+          if [[ -z ${{ env.DO_BUILD}} ]]; then
             exit 1
           fi
         
