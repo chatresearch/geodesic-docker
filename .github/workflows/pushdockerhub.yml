@@ -23,25 +23,29 @@ jobs:
           key: ${{ runner.os }}/release
 
       - name: check geo versions
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit == 'true'
         run: |
-          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > ~/geo_latest_release)
-          if [[ "$GEO_LATEST_RELEASE" != "$(cat ~/geo_latest_release)" ]]; then
-            echo $GEO_LATEST_RELEASE > ~/geo_latest_release
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name)
+          if [[ "LATEST_RELEASE" != "$(cat ~/geo_latest_release)" ]]; then
+            echo $LATEST_RELEASE > ~/geo_latest_release
           fi
         id: geo_updated
 
-      - name: check atmos versions
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > ~/atmos_latest_release)
-          if [[ "$ATMOS_LATEST_RELEASE" != "$(cat ~/atmos_latest_release)" ]]; then
-            echo $ATMOS_LATEST_RELEASE > ~/atmos_latest_release
-          fi
-        id: atmos_updated
+      - name: add geo version to cache
+        if: steps.geo_updated.outcome == 'failure'
+        run: curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > ~/geo_latest_release
+
+      # - name: check atmos versions
+      #   if: steps.cache.outputs.cache-hit == 'true'
+      #   run: |
+      #     LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > ~/atmos_latest_release)
+      #     if [[ "$LATEST_RELEASE" != "$(cat ~/atmos_latest_release)" ]]; then
+      #       echo $LATEST_RELEASE > ~/atmos_latest_release
+      #     fi
+      #   id: atmos_updated
 
       - name: check for release updates
-        if: steps.geo_updated.outcome == 'success' || steps.atmos_updated.outcome == 'success'
+        if: steps.geo_updated.outcome == 'success'
         run: exit 0
         id: release_updated
 
