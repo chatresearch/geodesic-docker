@@ -31,7 +31,7 @@ jobs:
          if [[ ! -f ~/atmos_latest_release ]]; then
           curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > ~/atmos_latest_release
          fi
-         exit 0
+         echo "DO_BUILD=true" >> "$GITHUB_ENV"
   
       - name: check geo versions
         if: steps.cache.outputs.cache-hit == 'true'
