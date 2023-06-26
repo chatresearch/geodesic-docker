@@ -23,7 +23,7 @@ jobs:
           key: ${{ runner.os }}/release
 
       - name: warm cache
-        if: steps.cache.outputs.cache-hit != 'false'
+        if: steps.cache.outputs.cache-hit == 'false'
         run: |
           curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > ~/geo_latest_release
           curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > ~/atmos_latest_release
