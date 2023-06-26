@@ -24,14 +24,16 @@ jobs:
           key: ${{ runner.os }}/release
 
       - name: warm cache
-        if: steps.cache.outputs.cache-hit == 'false'
         run: |
+         if [[ ! -f ~/geo_latest_release ]]; then
           curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name > ~/geo_latest_release
+         fi
+         if [[ ! -f ~/atmos_latest_release ]]; then
           curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > ~/atmos_latest_release
-        id: warm_cache
+         fi
   
       - name: check geo versions
-        if: steps.cache.outputs.cache-hit == 'true' || steps.warm_cache.conclusion == 'skipped'
+        if: steps.cache.outputs.cache-hit == 'true'
         run: |
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/geodesic/releases/latest" | jq -r .tag_name)
           ls -l ~/geo_latest_release
@@ -44,10 +46,9 @@ jobs:
             cat ~/geo_latest_release
             echo "DO_BUILD=true" >> "$GITHUB_ENV"
           fi
-        id: geo_updated
 
-      - name: check geo versions
-        if: steps.cache.outputs.cache-hit == 'true' || steps.warm_cache.conclusion == 'skipped'
+      - name: check atmos versions
+        if: steps.cache.outputs.cache-hit == 'true' 
         run: |
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name)
           ls -l ~/atmos_latest_release
@@ -60,7 +61,6 @@ jobs:
             cat ~/atmos_latest_release
             echo "DO_BUILD=true" >> "$GITHUB_ENV"
           fi
-        id: atmos_updated
 
       - name: set build flag
         if: ${{ env.DO_BUILD != 'true' }}
