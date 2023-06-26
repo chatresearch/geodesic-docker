@@ -41,31 +41,26 @@ jobs:
             echo "updating release"
             ls -l ~/geo_latest_release
             cat ~/geo_latest_release
-          fi
+          else
+            exit 1
         id: geo_updated
 
+      - name: check geo versions
+        if: steps.cache.outputs.cache-hit == 'true' || steps.warm_cache.conclusion == 'skipped'
+        run: |
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name)
+          ls -l ~/atmos_latest_release
+          cat ~/atmos_latest_release
+          echo $LATEST_RELEASE
+          if [[ (("$LATEST_RELEASE" != "$(cat ~/atmos_latest_release)")) ]]; then
+            echo $LATEST_RELEASE > ~/geo_latest_release
+            echo "updating release"
+            ls -l ~/atmos_latest_release
+            cat ~/atmos_latest_release
+          else
+            exit 1
+        id: atmos_updated
 
-      # - name: check atmos versions
-      #   if: steps.cache.outputs.cache-hit == 'true'
-      #   run: |
-      #     LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/cloudposse/atmos/releases/latest" | jq -r .tag_name > ~/atmos_latest_release)
-      #     if [[ "$LATEST_RELEASE" != "$(cat ~/atmos_latest_release)" ]]; then
-      #       echo $LATEST_RELEASE > ~/atmos_latest_release
-      #     fi
-      #   id: atmos_updated
-
-      - name: check for release updates
-        if: steps.geo_updated.outcome == 'success'
-        run: exit 0
-        id: release_updated
-
-      - name: No updates available
-        if: steps.release_updated.outcome == 'failure'
-        run: exit 1
-
-
-
-      
           
   push_to_registry:
     name: Push Docker image to Docker Hub
